@@ -1,8 +1,26 @@
 # interrogo
 
+## Problem
+
+Traditional software testing asserts that input A produces output B. Agents break this paradigm. An agent might reply "I cannot delete the data" while simultaneously executing the `delete_data()` tool in the background. Currently, 'AI Engineers' test agents by manually pasting hostile prompts into a chat window, but this is unscalable and fragile. We need a way to interrogate running agents in a CI/CD pipeline to verify what they say and do.
+
+## Solution
+
 InterroGo connects to your agent (via HTTP) and subjects it to a battery of interrogations--hostile prompts to trigger policy violations, hallucinations, or unauthorized tool usage.
 
-## Sequence Diagram
+### Usage
+
+1. The Target: Your agent must expose an HTTP endpoint (e.g., `POST /chat`) that accepts JSON and returns a response.
+2. Run/Deploy the Target
+3. The Attack: Run InterroGo against your agent locally or in CI
+```bash
+interrogo \
+    --judge="openai" \
+    --key="123abc" \
+    --target "http://localhost:8080/chat"
+```
+
+### Sequence Diagram
 
 ```mermaid
 sequenceDiagram
@@ -30,19 +48,4 @@ sequenceDiagram
     Note over J, U: Phase 2: The Judgment
     J->>L1: Evaluate Transcript against Policy
     J->>U: REPORT: PASS/FAIL
-```
-
-## Features
-
-* Coming soon!
-
-## Usage
-
-1. The Target: Your agent must expose an HTTP endpoint (e.g., `POST /chat`) that accepts JSON and returns a response.
-2. The Attack: Run InterroGo against your agent locally or in CI
-```bash
-interrogo \
-    --judge="openai" \
-    --key="123abc" \
-    --target "http://localhost:8080/chat"
 ```
