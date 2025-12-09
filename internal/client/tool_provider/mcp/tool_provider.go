@@ -75,7 +75,7 @@ func NewToolProvider(opts ...toolprovider.Option) toolprovider.ToolProvider {
 		options: options,
 	}
 
-	c, _ := client.NewSSEMCPClient(options.Location)
+	c, _ := client.NewStreamableHttpClient(options.Location)
 
 	tp.client = c
 

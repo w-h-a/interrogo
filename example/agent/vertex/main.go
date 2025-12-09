@@ -35,10 +35,10 @@ func main() {
 
 	// clients
 	mcpToolProvider := mcp.NewToolProvider(
-		toolprovider.WithLocation("http://localhost:8081/sse"),
+		toolprovider.WithLocation("http://localhost:8081/mcp"),
 	)
 
-	log.Println("Connecting to Tool Provider...")
+	log.Println("connecting to Tool Provider...")
 
 	if err := mcpToolProvider.Start(ctx); err != nil {
 		log.Fatalf("Failed to connect to Tool Provider: %v", err)

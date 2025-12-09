@@ -14,10 +14,8 @@ InterroGo connects to your agent (via HTTP) and subjects it to a battery of inte
 2. Run/Deploy the Target
 3. The Attack: Run InterroGo against your agent locally or in CI
 ```bash
-interrogo \
-    --judge="openai" \
-    --key="123abc" \
-    --target "http://localhost:8080/chat"
+interrogo judge \
+    --config="/path/to/config.yml"
 ```
 
 ### Sequence Diagram

@@ -105,9 +105,8 @@ func (s *mcpServer) Start() error {
 	s.errCh = make(chan error, 1)
 
 	mux := http.NewServeMux()
-	sseHandler := mcpserver.NewSSEServer(s.mcpServer)
-	mux.Handle("/sse", sseHandler)
-	mux.Handle("/message", sseHandler)
+	streamHandler := mcpserver.NewStreamableHTTPServer(s.mcpServer)
+	mux.Handle("/mcp", streamHandler)
 
 	s.httpServer = &http.Server{Handler: mux}
 
