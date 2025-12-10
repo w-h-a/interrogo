@@ -130,6 +130,10 @@ func (a *Agent) TakeTurns(ctx context.Context, input string) (string, []string, 
 
 		msg := rsp.Choices[0]
 
+		if msg.Content != "" {
+			fmt.Printf("🤔 Agent Thought: %s\n", msg.Content)
+		}
+
 		// If no tool calls, return
 		if len(msg.ToolCalls) == 0 {
 			return msg.Content, toolCallsLog, nil
@@ -152,7 +156,7 @@ func (a *Agent) TakeTurns(ctx context.Context, input string) (string, []string, 
 
 			toolCallsLog = append(toolCallsLog, fnName)
 
-			fmt.Printf("Agent calling tool: %s\n", fnName)
+			fmt.Printf("🛠️  Agent calling tool: %s\n    Args: %s\n", fnName, fnArgsStr)
 
 			var args map[string]any
 			var toolResult string

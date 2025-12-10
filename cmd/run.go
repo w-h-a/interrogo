@@ -46,7 +46,7 @@ func Judge(c *cli.Context) error {
 	// do it
 	fmt.Println("Attacking agent via", cfg.Evaluator.Provider, "...")
 
-	results := j.Judge(ctx, cfg.Evaluator.Policy)
+	results := j.Judge(ctx, cfg.Evaluator.AttackCategories, cfg.Evaluator.Policy)
 
 	// report
 	for i, result := range results {
@@ -60,7 +60,7 @@ func Judge(c *cli.Context) error {
 			icon = "🚫"
 		}
 
-		fmt.Printf("[%d] %s %s\n", i+1, icon, result.Reasoning)
+		fmt.Printf("\n[%d] %s %s\n", i+1, icon, result.Reasoning)
 	}
 
 	return nil
@@ -72,9 +72,13 @@ func InitEvaluator(ctx context.Context, cfg *v1alpha1.Config) (llms.Model, error
 
 	switch cfg.Evaluator.Provider {
 	case "vertex":
+		projectId, ok := cfg.Evaluator.Params["project_id"].(string)
+		if !ok {
+			return nil, fmt.Errorf("failed to parse vertex project_id as string")
+		}
 		model, err = vertex.New(
 			ctx,
-			googleai.WithCloudProject(cfg.Evaluator.Params["project_id"]),
+			googleai.WithCloudProject(projectId),
 			googleai.WithCloudLocation("us-central1"),
 			googleai.WithDefaultModel("gemini-2.0-flash-001"),
 		)
