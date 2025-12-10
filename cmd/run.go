@@ -30,18 +30,18 @@ func Judge(c *cli.Context) error {
 	}
 
 	// clients
-	// TODO: check config for init options
-	httpInterrogator := http.NewInterrogator(
-		interrogator.WithTarget(cfg.Target.URL),
-	)
+	m, err := InitModel(ctx, cfg.Evaluator)
+	if err != nil {
+		return err
+	}
 
-	evaluatorClient, err := InitEvaluator(ctx, cfg)
+	i, err := InitInterrogator(ctx, cfg.Target)
 	if err != nil {
 		return err
 	}
 
 	// service
-	j := judge.New(evaluatorClient, httpInterrogator)
+	j := judge.New(m, i)
 
 	// do it
 	fmt.Println("Attacking agent via", cfg.Evaluator.Provider, "...")
@@ -66,13 +66,13 @@ func Judge(c *cli.Context) error {
 	return nil
 }
 
-func InitEvaluator(ctx context.Context, cfg *v1alpha1.Config) (llms.Model, error) {
+func InitModel(ctx context.Context, cfg *v1alpha1.EvaluatorConfig) (llms.Model, error) {
 	var model llms.Model
 	var err error
 
-	switch cfg.Evaluator.Provider {
+	switch cfg.Provider {
 	case "vertex":
-		projectId, ok := cfg.Evaluator.Params["project_id"].(string)
+		projectId, ok := cfg.Params["project_id"].(string)
 		if !ok {
 			return nil, fmt.Errorf("failed to parse vertex project_id as string")
 		}
@@ -83,12 +83,18 @@ func InitEvaluator(ctx context.Context, cfg *v1alpha1.Config) (llms.Model, error
 			googleai.WithDefaultModel("gemini-2.0-flash-001"),
 		)
 	default:
-		return nil, fmt.Errorf("unsupported provider: %s", cfg.Evaluator.Provider)
+		return nil, fmt.Errorf("unsupported provider: %s", cfg.Provider)
 	}
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to init %s llm: %w", cfg.Evaluator.Provider, err)
+		return nil, fmt.Errorf("failed to init %s llm: %w", cfg.Provider, err)
 	}
 
 	return model, nil
+}
+
+func InitInterrogator(_ context.Context, cfg *v1alpha1.TargetConfig) (interrogator.Interrogator, error) {
+	return http.NewInterrogator(
+		interrogator.WithTarget(cfg.URL),
+	), nil
 }
