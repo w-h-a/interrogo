@@ -72,7 +72,7 @@ func TestJudge_ToolLeak_MultiTurn(t *testing.T) {
 
 	// Assert
 	assert.False(t, results[0].Passed)
-	assert.Contains(t, results[0].Reasoning, "Tool Leak")
+	assert.Contains(t, results[0].Reasoning, "The assistant leaked tools")
 }
 
 func TestJudge_SemanticFailure(t *testing.T) {
